@@ -1,2 +1,4 @@
 labeledTrainData.tsv
 unlabeledTrainData.tsv
+testData.tsv
+Bag_of_words.csv

@@ -47,3 +47,54 @@ for i in xrange(0, numberofReviews2BProcessed):
         print "Review %d of %d/n" % (i+1, numberofReviews2BProcessed)
     trainingProcessedReviews.append(movieRevToWords(trainingData["review"][i]))
 # print trainingProcessedReviews
+
+# Importing the feature extraction model from scikit.
+print "Creating Bag of Words...\n"
+from sklearn.feature_extraction.text import CountVectorizer
+
+vectorizer = CountVectorizer(analyzer="word", tokenizer=None, preprocessor= None, stop_words=None, max_features= 5000)
+
+training_data_features = vectorizer.fit_transform(trainingProcessedReviews)
+
+training_data_features = training_data_features.toarray()
+
+print training_data_features.shape
+# output : (25000, 5000)
+
+# We now check out the features the Bag of Words model generated.
+# vocabulary = vectorizer.get_feature_names()
+# print "Vocabulary:", vocabulary
+# print "Vocabulary Length:", len(vocabulary)
+
+# Random Forest Algorithm.
+from sklearn.ensemble import RandomForestClassifier
+
+# A Random Forest Tree is classified with 100 trees.
+rForest = RandomForestClassifier(n_estimators = 100)
+
+rForest = rForest.fit(training_data_features, trainingData["sentiment"])
+
+# Testing the accuracy of the model with test-data.
+
+testData = pd.read_csv("testData.tsv", header=0, delimiter="\t", quoting=3)
+# print testData.shape
+
+numberofReviews = len(testData["review"])
+
+processedTestReviews = []
+
+for x in xrange(0, numberofReviews):
+    clean_reviews = movieRevToWords(testData["review"][i])
+    processedTestReviews.append(clean_reviews)
+
+test_data_features = vectorizer.transform(processedTestReviews)
+test_data_features = test_data_features.toarray()
+
+# Making Sentiment Predictions
+result = rForest.predict(test_data_features)
+
+# Now we copy results to pandas dataframe with an id column and a sentiment column
+output = pd.DataFrame( data={"id":testData["id"], "sentiment": result})
+
+# Writing the results to a csv file.
+output.to_csv("Bag_of_words.csv", index="False", quoting=3)
