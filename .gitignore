@@ -2,3 +2,7 @@ labeledTrainData.tsv
 unlabeledTrainData.tsv
 testData.tsv
 Bag_of_words.csv
+
+.DS_Store
+bow_movieRevs.pyc
+movieReviews.pyc
